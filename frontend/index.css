@@ -1,0 +1,100 @@
+body {
+    background-color: #F7F0F0;
+    margin: 0;
+    padding: 0;
+    font-family: 'Montserrat', sans-serif;
+    color: #484349;
+    overflow-y: hidden;
+}
+
+@font-face {
+    font-family: 'Montserrat';
+    src: url('./fonts/Montserrat.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.upload {
+    margin: auto;
+    margin-bottom: 60px;
+    padding-top: 20px;
+    width: 50%;
+}
+
+#upload-title {
+    margin-left: 10px;
+}
+
+#drop-area, #drop-area-hid {
+    border: 2px dashed #aaa;
+    border-radius: 10px;
+    text-align: center;
+    color: #777;
+    font-family: sans-serif;
+    cursor: pointer;
+    margin-bottom: 20px;
+    transition: border-color 0.2s, background-color 0.2s;
+}
+
+#drop-area {
+    padding: 65px 40px 15px 40px;
+    height: 20vh;
+}
+
+#drop-area.dragover, #drop-area:hover {
+    border-color: #484349;
+    background-color: #f9f9f9;
+}
+
+#drop-area-hid {
+    padding: 25px 15px 5px 15px;
+    height: 10vh;
+    overflow: hidden;
+    transition: height 0.3s ease;
+}
+
+#drop-area object, #drop-area-hid object {
+  pointer-events: none;
+}
+
+#drop-area-hid:hover, #drop-area-hid.dragover {
+    height: 20vh;
+    padding: 65px 40px 15px 40px;
+    border-color: #484349;
+    background-color: #f9f9f9;
+    transition: height 0.3s ease;
+}
+
+#drop-area-text {
+    margin-bottom: 100px;
+}
+
+#drop-area input[type="file"] {
+    display: none;
+}
+
+#image-icon {
+    width: 200px;
+    height: auto;
+}
+
+.results-container {
+    display: flex;
+    width: 85%;
+    gap: 50px;
+    margin: auto;
+}
+
+#yolo-image, #google-image {
+    width: 99%;
+    border-radius: 10px;
+}
+
+h3 {
+    margin: 0px;
+    padding: 0px;
+}
+
+#yolo-title, #google-title {
+    font-size: 20px;
+}
