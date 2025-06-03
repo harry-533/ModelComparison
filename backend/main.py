@@ -4,6 +4,11 @@ from fastapi.responses import JSONResponse
 from ultralytics import YOLO
 from google.cloud import vision
 from PIL import Image, ImageDraw
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from typing import List
+from openpyxl import Workbook
+from openpyxl.drawing.image import Image as ExcelImage
 import io
 import shutil
 import os
@@ -22,6 +27,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+app.mount("/downloads", StaticFiles(directory="../frontend/downloads"), name="downloads")
+
+
+async def serve_index():
+    return FileResponse("../frontend/index.html")
 
 model = YOLO('yolo.pt')
 
@@ -79,6 +91,79 @@ async def upload_image(file: UploadFile = File(...)):
         "yolo_image_base64": img_yolo_base64,
         "google_image_base64": img_google_base64
     })
+
+@app.post("/upload-folder/")
+async def upload_folder(images: list[UploadFile] = File(...)):
+    # Create Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "YOLO Results"
+
+    row = 1
+
+    for file in images:
+        clean_name = os.path.basename(file.filename)
+        filename = f"temp_{uuid.uuid4().hex[:8]}_{clean_name}"
+        with open(filename, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+
+        results = model(filename)[0]
+        labels = []
+
+        for box in results.boxes:
+            cls_id = int(box.cls[0])
+            conf = float(box.conf[0])
+            label = model.names[cls_id]
+            labels.append((label, round(conf, 4)))
+
+        # Save image with boxes
+        img = cv2.imread(filename)
+        for box in results.boxes:
+            x1, y1, x2, y2 = map(int, box.xyxy[0])
+            label = model.names[int(box.cls[0])]
+            conf = float(box.conf[0])
+            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            cv2.putText(img, f"{label} {conf:.2f}", (x1, y1 - 10),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+
+        output_img_path = f"annotated_{uuid.uuid4().hex[:8]}.jpg"
+        cv2.imwrite(output_img_path, img)
+
+        # Insert Image
+        if os.path.exists(output_img_path):
+            ws.row_dimensions[row].height = 100
+            img_excel = ExcelImage(output_img_path)
+            img_excel.width = 200
+            img_excel.height = 100
+            ws.add_image(img_excel, f"A{row}")
+        else:
+            print(f"Warning: Annotated image {output_img_path} not found. Skipping Excel embedding.")
+
+        # Write labels
+        ws.cell(row=row, column=2, value="Filename")
+        ws.cell(row=row, column=3, value=file.filename)
+        row += 1
+        ws.cell(row=row, column=2, value="Label")
+        ws.cell(row=row, column=3, value="Confidence")
+        row += 1
+
+        for label, conf in labels:
+            ws.cell(row=row, column=2, value=label)
+            ws.cell(row=row, column=3, value=conf)
+            row += 1
+
+        # Spacer row
+        row += 1
+
+    # Save Excel
+    excel_path = f"../frontend/downloads/results_{uuid.uuid4().hex[:8]}.xlsx"
+    wb.save(excel_path)
+
+    for file in os.listdir():
+        if file.startswith("temp_") or file.startswith("annotated_"):
+            os.remove(file)
+
+    return {"download_url": f"{excel_path}"}
 
 def detect_labels_from_image_path(image_path: str):
     client = vision.ImageAnnotatorClient()
