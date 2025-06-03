@@ -1,5 +1,3 @@
-backend/google-creds.json
-backend/__pycache__/
-backend/yolo.pt
+google-creds.json
 backend/venv
 backend/__pycache__
