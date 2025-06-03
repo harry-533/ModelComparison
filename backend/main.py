@@ -10,6 +10,7 @@ from typing import List
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image as ExcelImage
 import io
+import requests
 import shutil
 import os
 import cv2
@@ -28,12 +29,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/static", StaticFiles(directory="../frontend"), name="static")
+app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
 app.mount("/downloads", StaticFiles(directory="../frontend/downloads"), name="downloads")
-
 
 async def serve_index():
     return FileResponse("../frontend/index.html")
+
+YOLO_PATH = "yolo.pt"
+YOLO_URL = "https://drive.google.com/file/d/1tFAN0ies3wIsLC4q--PGMR8MoWAWRLNU/view?usp=sharing"
+
+if not os.path.exists(YOLO_PATH):
+    print("Downloading YOLO model...")
+    with open(YOLO_PATH, "wb") as f:
+        f.write(requests.get(YOLO_URL).content)
+    print("Download complete.")
+
+creds_path = "google-creds.json"
+creds_content = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+
+if creds_content:
+    with open(creds_path, "w") as f:
+        f.write(creds_content)
 
 model = YOLO('yolo.pt')
 

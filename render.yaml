@@ -1,15 +1,10 @@
 services:
   - type: web
-    name: yolo-api
+    name: model-comparison
     env: python
     buildCommand: pip install -r backend/requirements.txt
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port 10000
     envVars:
       - key: GOOGLE_APPLICATION_CREDENTIALS
-        value: /etc/secrets/google_creds.json
+        sync: false
     plan: free
-    autoDeploy: true
-    region: oregon
-    secrets:
-      - name: google_creds
-        path: backend/google-creds.json
