@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Image Upload</title>
+  <script src="index.js" defer></script>
+  <link rel="stylesheet" href="index.css">
+</head>
+<body>
+  <div class="upload">
+    <div class="drop-area">
+      <h1 id="upload-title">Upload an Image</h1>
+      <div id="drop-area">
+        <object data="svgs/img.svg" type="image/svg+xml"></object>
+        <p id="drop-area-text">Drag & Drop Image Here or Click to Browse</p>
+        <input type="file" id="image-input" accept="image/*" />
+      </div>
+    </div>
+    <div class="drop-area">
+      <h1 id="upload-title">Upload a Folder</h1>
+      <div id="drop-area-folder">
+        <object data="svgs/folder.svg" type="image/svg+xml"></object>
+        <p id="drop-area-text">Drag & Drop Folder Here or Click to Browse</p>
+        <input type="file" id="folder-input" webkitdirectory multiple accept="image/*" />
+      </div>
+    </div>
+  </div>
+
+  <div class="progress">
+    <p id="status-text">Processing... 0%</p>
+    <div id="progress-bar"></div>
+    <div id="current-progress"></div>
+  </div>
+  <a id="download-btn" style="display:none;" class="btn btn-primary"></a>
+
+  <div class="results-container">
+    <div class="yolo">
+      <div id="yolo-title"></div>
+      <div id="yolo-labels">
+      </div>
+      <img id="yolo-image"/>
+    </div>
+    <div class="google">
+      <div id="google-title"></div>
+      <div id="google-labels">
+      </div>
+      <img id="google-image"/>
+    </div>
+  </div>
+</body>
+</html>

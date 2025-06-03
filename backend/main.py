@@ -29,20 +29,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/", StaticFiles(directory="../frontend", html=True), name="frontend")
-app.mount("/downloads", StaticFiles(directory="../frontend/downloads"), name="downloads")
-
-async def serve_index():
-    return FileResponse("../frontend/index.html")
-
-YOLO_PATH = "yolo.pt"
-YOLO_URL = "https://drive.google.com/file/d/1tFAN0ies3wIsLC4q--PGMR8MoWAWRLNU/view?usp=sharing"
-
-if not os.path.exists(YOLO_PATH):
-    print("Downloading YOLO model...")
-    with open(YOLO_PATH, "wb") as f:
-        f.write(requests.get(YOLO_URL).content)
-    print("Download complete.")
+app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+app.mount("/downloads", StaticFiles(directory="frontend/downloads"), name="downloads")
 
 if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
     creds_data = base64.b64decode(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
@@ -171,7 +159,7 @@ async def upload_folder(images: list[UploadFile] = File(...)):
         row += 1
 
     # Save Excel
-    excel_path = f"../frontend/downloads/results_{uuid.uuid4().hex[:8]}.xlsx"
+    excel_path = f"frontend/downloads/results_{uuid.uuid4().hex[:8]}.xlsx"
     wb.save(excel_path)
 
     for file in os.listdir():
