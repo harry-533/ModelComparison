@@ -12,7 +12,7 @@ from openpyxl.drawing.image import Image as ExcelImage
 import io
 import requests
 import shutil
-import os
+import os, base64
 import cv2
 import numpy as np
 import base64
@@ -44,12 +44,11 @@ if not os.path.exists(YOLO_PATH):
         f.write(requests.get(YOLO_URL).content)
     print("Download complete.")
 
-creds_path = "google-creds.json"
-creds_content = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-
-if creds_content:
-    with open(creds_path, "w") as f:
-        f.write(creds_content)
+if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
+    creds_data = base64.b64decode(os.environ["GOOGLE_APPLICATION_CREDENTIALS_JSON"])
+    with open("google_creds.json", "wb") as f:
+        f.write(creds_data)
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_creds.json"
 
 model = YOLO('yolo.pt')
 
