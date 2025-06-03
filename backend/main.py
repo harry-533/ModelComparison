@@ -38,6 +38,11 @@ if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
         f.write(creds_data)
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_creds.json"
 
+
+if not os.path.exists("yolo.pt"):
+    print("Downloading YOLO model from Google Drive...")
+    os.system("gdown --id 1tFAN0ies3wIsLC4q--PGMR8MoWAWRLNU -O yolo.pt")
+
 model = YOLO('yolo.pt')
 
 @app.post("/upload/")
