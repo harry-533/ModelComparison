@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <title>Image Upload</title>
-  <script src="index.js" defer></script>
-  <link rel="stylesheet" href="index.css">
+  <script src="/static/index.js" defer></script>
+  <link rel="stylesheet" href="/static/index.css">
 </head>
 <body>
   <div class="upload">
     <div class="drop-area">
       <h1 id="upload-title">Upload an Image</h1>
       <div id="drop-area">
-        <object data="svgs/img.svg" type="image/svg+xml"></object>
+        <object data="/static/img.svg" type="image/svg+xml"></object>
         <p id="drop-area-text">Drag & Drop Image Here or Click to Browse</p>
         <input type="file" id="image-input" accept="image/*" />
       </div>
@@ -19,7 +19,7 @@
     <div class="drop-area">
       <h1 id="upload-title">Upload a Folder</h1>
       <div id="drop-area-folder">
-        <object data="svgs/folder.svg" type="image/svg+xml"></object>
+        <object data="/static/folder.svg" type="image/svg+xml"></object>
         <p id="drop-area-text">Drag & Drop Folder Here or Click to Browse</p>
         <input type="file" id="folder-input" webkitdirectory multiple accept="image/*" />
       </div>

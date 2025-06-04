@@ -1,5 +1,4 @@
 google-creds.json
 backend/venv
 backend/__pycache__
-backend/yolo.pt
-backend/.gitattributes
+backend/encoded.txt

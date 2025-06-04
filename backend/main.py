@@ -10,11 +10,10 @@ from typing import List
 from openpyxl import Workbook
 from openpyxl.drawing.image import Image as ExcelImage
 import io
-import requests
+import json
 import shutil
 import os, base64
 import cv2
-import numpy as np
 import base64
 import uuid
 
@@ -29,7 +28,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/", StaticFiles(directory="frontend", html=True), name="frontend")
+# Serve static assets like CSS/JS/images
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+
+# Serve index.html manually at root
+@app.get("/")
+async def root():
+    return FileResponse("frontend/static/index.html")
+
+
 app.mount("/downloads", StaticFiles(directory="frontend/downloads"), name="downloads")
 
 if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
@@ -38,14 +45,11 @@ if "GOOGLE_APPLICATION_CREDENTIALS_JSON" in os.environ:
         f.write(creds_data)
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "google_creds.json"
 
+creds_path = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+with open(creds_path) as f:
+    creds = json.load(f)
 
-model_path = "/tmp/yolo.pt"
-
-if not os.path.exists(model_path):
-    print("Downloading YOLO model from Google Drive...")
-    os.system(f"gdown --id 1tFAN0ies3wIsLC4q--PGMR8MoWAWRLNU -O {model_path}")
-
-model = YOLO(model_path)
+model = YOLO("yolo.pt")
 
 @app.post("/upload/")
 async def upload_image(file: UploadFile = File(...)):
